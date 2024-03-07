@@ -17,6 +17,7 @@ return new class extends Migration
                 ->collation('utf8mb4_unicode_ci')
                 ->unique()
                 ;
+            $table->timestamps();
         });
     }
 
