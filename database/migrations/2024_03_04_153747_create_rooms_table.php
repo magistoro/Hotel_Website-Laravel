@@ -20,14 +20,15 @@ return new class extends Migration
                 ;
             $table->text('description')
                 ->collation('utf8mb4_unicode_ci')
+                ->nullable()
                 ;
-            $table->decimal('price_per_night', 7, 2)
+            $table->decimal('price_per_night', 12, 2)
                 ->index()
                 ;
            $table->integer('people_count')
                 ->index()
                 ;
-            $table->string('image', 191)
+            $table->string('image', 256)
                 ->collation('utf8mb4_unicode_ci')
                 ->default('default.jpg')
                 ;
@@ -37,7 +38,12 @@ return new class extends Migration
                 ->cascadeOnDelete()
                 ->restrictOnUpdate()
                 ;
-            $table->index('category_id');
+
+            $table->foreignId('status_id')
+                ->constrained('room_statuses')
+                ->cascadeOnDelete()
+                ->restrictOnUpdate()
+                ;
 
             $table->timestamps();
         });

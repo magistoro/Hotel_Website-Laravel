@@ -27,7 +27,7 @@ class Role extends Model
         return self::where('name', 'user')->first()->id;
     }
 
-    public function products():HasMany
+    public function users():HasMany
     {
         return $this->hasMany(User::class);
     }

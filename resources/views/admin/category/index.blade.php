@@ -36,14 +36,12 @@
     <tr>
       <th class="sorting" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-label="Browser: activate to sort column ascending" style="width: 7%;">ID</th>
       <th class="sorting" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-label="Browser: activate to sort column ascending">Наименование</th>
-      <th class="sorting" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-label="Browser: activate to sort column ascending">Транскрипция</th>
     </thead>
     <tbody>
       @foreach($categories as $category) 
       <tr class="odd" onclick="window.location='{{ route('admin.category.show', $category->id) }}';" style="cursor: pointer">
         <td class="dtr-control sorting_1" tabindex="0">{{$category->id}}</td>
-        <td>{{$category->name}}</td>
-        <td>{{$category->slug}}</td>
+        <td>{{$category->title}}</td>
         </tr>
       @endforeach
     </tbody>
@@ -51,7 +49,6 @@
     <tr>
       <th rowspan="1" colspan="1">ID</th>
       <th rowspan="1" colspan="1">Наименование</th>
-      <th rowspan="1" colspan="1">Транскрипция</th>
     </tr>
     </tfoot>
     </table></div></div></div></div></div></div></div></div>

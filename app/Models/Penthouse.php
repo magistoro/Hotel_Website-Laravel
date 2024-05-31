@@ -12,23 +12,32 @@ class Penthouse extends Model
 {
     use HasFactory, HasUuids;
 
-    protected $table = 'penthouse';
+    protected $table = 'penthouses';
 
     protected $fillable = [
-        'name',
+        'title',
         'description',
         'price',
-        'items_in_stock',
-        'thumbnail',
+        'image',
         'category_id',
         'type_id',
     ];
 
-    protected $with = ['category', 'type'];
+    protected $with = ['category'];
 
     public function category():BelongsTo
     {
         return $this->belongsTo(Category::class);
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
+
+    public function amenities()
+    {
+        return $this->belongsToMany(Amenity::class, 'penthouses_amenities');
     }
 
 }

@@ -16,13 +16,12 @@ return new class extends Migration
             
             $table->string('title', 255)
                 ->collation('utf8mb4_unicode_ci')
-                ->unique()
                 ->index()
                 ;
             $table->text('description')
                 ->collation('utf8mb4_unicode_ci')
                 ;
-            $table->decimal('price', 7, 2)
+            $table->decimal('price', 12, 2)
                 ->index()
                 ;
  
@@ -36,6 +35,12 @@ return new class extends Migration
                 ->cascadeOnDelete()
                 ->restrictOnUpdate()
                 ;
+
+            $table->foreignUuid('user_id')->nullable()
+            ->constrained('users')
+            ->cascadeOnDelete()
+            ->restrictOnUpdate()
+            ;
 
             $table->timestamps();
         });

@@ -3,155 +3,135 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Sale\UpdateRequest;
-use App\Models\Category;
-use App\Models\OrderSoldProduct;
-use App\Models\Product;
-use App\Models\RentOrder;
-use App\Models\SoldOrder;
+use App\Http\Requests\Order\UpdateRequest;
+use App\Models\Order;
+use App\Models\Room;
+use App\Models\Ticket;
 use App\Models\User;
-use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Ramsey\Uuid\Uuid; 
 
 class OrderController extends Controller
 {
-    public function index()
+    public function new()
     {
-    $sold_orders = SoldOrder::with('orderSoldProducts.product')->get();
-       return view('admin.sale.index', compact('sold_orders'));
+        $orders = Order::with('tickets')->get();
+        return view('admin.order.new', compact('orders'));
     }
 
-    public function show(SoldOrder $soldOrder)
+    public function completed()
     {
-        // dd($soldOrder);
-        $orderSoldProducts = $soldOrder->orderSoldProducts()->with('product')->get();
-        if ($soldOrder->cancelled_at) {
-            $soldOrder->status = 'Отменён';
-        } else if ($soldOrder->delivered_at) {
-            $soldOrder->status = 'Получено';
-        } elseif ($soldOrder->dispatched_at) {
-            $soldOrder->status = 'Отправлено';
-        } elseif ($soldOrder->assembled_at) {
-            $soldOrder->status = 'Собран';
-        } else {
-            $soldOrder->status = 'Новый';
-        }
-        return view('admin.sale.show', compact('soldOrder', 'orderSoldProducts'));
+        $orders = Order::with('tickets')->get();
+        return view('admin.order.completed', compact('orders'));
     }
-
-    public function edit(SoldOrder $soldOrder)
+ 
+    public function create(Request $request,)
     {
+        $startDate = $request->query('start_date');
+        $endDate = $request->query('end_date');
+
+        $room = Room::findOrFail($request->query('room'));
+
+        $rooms = Room::all();
+        // dd($rooms);
         $users = User::all();
-        $products = Product::all();
-        $orderSoldProducts = $soldOrder->orderSoldProducts()->with('product')->get();
-        return view('admin.sale.edit', compact('soldOrder', 'orderSoldProducts', 'users', 'products'));
+        return view('admin.order.create', compact('rooms', 'users', 'startDate', 'endDate', 'room'));  
     }
 
-    public function update(SoldOrder $soldOrder, UpdateRequest $request)
+    public function store(Request $request)
     {
-        $data = $request->validated(); 
+        $formData = $request->all();
 
-        $productData = $request->input('product_data');
-        $products = json_decode($productData, true);
-
-         // Если в заказе нет товаров, просто вернуться без внесения изменений
-        if (empty($products)) {
-        return redirect()->route('admin.sale.edit', $soldOrder)->with('info', 'Заказ не содержит товаров. Продолжить невозможно.');
-        }
-    
-          // Удаление старых продуктов через отношение
-        $soldOrder->orderSoldProducts()->delete();
-
-        foreach ($products as $product) {
-            $orderSoldProduct = new OrderSoldProduct();
-            $orderSoldProduct->sold_order_id = $soldOrder->id;
-            $orderSoldProduct->product_id = $product['id'];
-            $orderSoldProduct->quantity = $product['quantity'];
-    
-            // Обновление значения поля assembled_at
-            if ($product['assembled']) {
-                $orderSoldProduct->assembled_at = now();
+        foreach ($formData as $key => $value) {
+            if (isset($value['room_id'])) {
+                $roomId = $value['room_id'];
+                unset($formData[$key]);
             }
 
-            // $data = $request->validated();
-            $soldOrder->update($data);
-            $soldOrder->save();
-            $orderSoldProduct->save();
-        }
-
-    return redirect()->route('admin.sale.show', $soldOrder)->with('success', 'Заказ успешно обновлён!');
-    }
-
-
-    public function updateStatus(Request $request, SoldOrder $soldOrder)
-    {
-        // Проверяем, что кнопка нажата
-        if ($request->has('status')) {
-            // Получаем новый статус из кнопки
-            $newStatus = $request->status;
-
-            // Обновляем соответствующую колонку в БД в зависимости от нового статуса
-            switch ($newStatus) {
-                case 'Собрано':
-                    $soldOrder->assembled_at = now();
-                    $soldOrder->dispatched_at = null;
-                    $soldOrder->delivered_at = null;
-                    $soldOrder->cancelled_at = null;
-                    break;
-                case 'Отправлено':
-                    // $soldOrder->assembled_at = now();
-                    $soldOrder->dispatched_at = now();
-                    $soldOrder->delivered_at = null;
-                    $soldOrder->cancelled_at = null;
-                    break;
-                case 'Получено':
-                    // $soldOrder->assembled_at = now();
-                    // $soldOrder->dispatched_at = now();
-                    $soldOrder->delivered_at = now();
-                    $soldOrder->cancelled_at = null;
-                    break;
-                case 'Отменён':
-                    // $soldOrder->assembled_at = null;
-                    // $soldOrder->dispatched_at = null;
-                    // $soldOrder->delivered_at = null;
-                    $soldOrder->cancelled_at = now();
-                    break;
-
-                default:
-                    // Если был передан неправильный статус, ничего не изменяем
-                    return redirect()->back();
+            if (isset($value['daterange'])) {
+                $daterange = $value['daterange'];
+                unset($formData[$key]);
             }
-
-            // Сохраняем изменения в БД
-            $soldOrder->save();
         }
 
-        // Перенаправляем на страницу с деталями заказа
-        return redirect()->route('admin.sale.show', $soldOrder)->with('success', 'Статус успешно сменен на '.$newStatus.'!');
+        list($arrivedDateString, $departDateString) = explode(" - ", $daterange);
+        $arrivedDate = date("Y-m-d", strtotime($arrivedDateString));
+        $departDate = date("Y-m-d", strtotime($departDateString));
+
+        $totalPeople = count($formData);
+
+        // Создаем новый заказ или находим существующий
+        $order = Order::firstOrCreate(
+            [
+                'id' => Uuid::uuid4()->toString(),
+                'total_amount' => $totalPeople,
+                'arrived_date' => $arrivedDate,
+                'depart_date' => $departDate,
+            ]
+        );
+  
+
+    foreach ($formData as $item) {
+        if ($item['account_type'] === 'new') {
+            // Создаем новый аккаунт
+            $user = User::create([
+                'id' => Uuid::uuid4()->toString(),
+                'name' => $item['name'],
+                'surname' => $item['surname'],
+                'patronymic' => $item['patronymic'],
+                'email' => $item['email'],
+                'phone' => $item['phone'],
+                'birth_date' => $item['birth_date'],
+                'role_id' => 1,
+                'password' => bcrypt('hotel123'),
+                // Другие параметры нового пользователя
+            ]);
+
+            // Создаем билет
+            $ticket = Ticket::create([
+                'order_id' => $order->id,
+                'user_id' => $user->id,
+                'room_id' => $roomId,
+            ]);
+        }
+
+        if ($item['account_type'] === 'existing') {
+            $userId = $item['user_id'];
+
+            // Создаем билет
+            $ticket = Ticket::create([
+                'order_id' => $order->id,
+                'user_id' => $userId,
+                'room_id' => $roomId,
+            ]);
+        }
     }
 
-
-
-
-    public function getNotifications(Request $request) // Для отправки уведомлений
-    {
-        $notifications = SoldOrder::where('created_at', '>=', Carbon::now()->subSeconds(5))
-        ->orderBy('created_at', 'desc')
-        ->get();
-
-    $html = view('layouts.notifications', compact('notifications'))->render();
-
-    // return response()->json(['html' => $html]);
-
-
-    // Проверяем, есть ли новые заказы
-    $hasNewNotifications = SoldOrder::where('created_at', '>=', Carbon::now()->subSeconds(5))
-        ->exists();
-
-    // Получаем HTML-код для уведомлений
-    // $html = view('layouts.notifications')->render();
-
-    return response()->json(['html' => $html, 'hasNewNotifications' => $hasNewNotifications]);
+    // Возвращаем ответ, если необходимо
+     return response()->json(['success' => true, 'order' => $order->id, 'arrivedDate' => $arrivedDate, 'departDate' => $departDate]);
 }
+
+    public function show(Order $order)
+    {
+        return view('admin.order.show', compact('order'));
+    } 
+    
+
+    public function edit()
+    {
+       
+    }
+
+    public function update( UpdateRequest $request)
+    {
+        
+    }
+
+    public function destroy(Order $order)
+    {
+        $order->delete();
+        return redirect()->route('admin.index')->with('success',  'Заказ успешно удалён!');
+    }
+   
 
 }

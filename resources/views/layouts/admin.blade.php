@@ -35,10 +35,15 @@
    <link rel="stylesheet" href="{{asset('adminlte/plugins/datatables-searchpanes/css/searchPanes.bootstrap4.min.css')}}">
    <link rel="stylesheet" href="{{asset('adminlte/plugins/datatables-searchbuilder/css/searchBuilder.bootstrap4.min.css')}}">
 
-   
+    {{-- Выбор Дат --}}
+    <link rel="stylesheet" href="{{asset('adminlte/plugins/daterangepicker/daterangepicker.css')}}">
 
    {{-- Иконки --}}
    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ionicons/2.0.1/css/ionicons.min.css">
+
+   {{-- Full Calendar -  Очень странно подключён  --}}
+   {{-- <link rel="stylesheet" href="{{asset('adminlte/plugins/fullcalendar/main.min.css')}}" /> --}}
+   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.css" /> 
 
 
 
@@ -59,6 +64,52 @@
       <li class="nav-item">
         <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
       </li>
+
+      <li class="nav-item">
+      </li>
+
+      <li class="nav-item  ml-3">
+        <div class="btn-group">
+          <a href="{{route('admin.check_into.index')}}" type="button" class="btn btn-success">Найти заказ</a>
+          <button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+          <span class="sr-only">Toggle Dropdown</span>
+          </button>
+          <div class="dropdown-menu" role="menu" style="">
+          <a class="dropdown-item" href="#">По пользователю</a>
+          <a class="dropdown-item" href="#">По номеру комнаты</a>
+          <a class="dropdown-item" href="#">Something else here</a>
+          <div class="dropdown-divider"></div>
+          <a class="dropdown-item" href="#">Separated link</a>
+          </div>
+          </div>
+      </li>
+
+      <li class="nav-item ml-3">
+        <div class="btn-group">
+          <button type="button" class="btn btn-info">Заказать услугу в номер</button>
+          <button type="button" class="btn btn-info dropdown-toggle dropdown-icon" data-toggle="dropdown" aria-expanded="false">
+          <span class="sr-only">Toggle Dropdown</span>
+          </button>
+          <div class="dropdown-menu" role="menu" style="">
+          <a class="dropdown-item" href="#">По пользователю</a>
+          <a class="dropdown-item" href="#">По номеру комнаты</a>
+          <a class="dropdown-item" href="#">Something else here</a>
+          <div class="dropdown-divider"></div>
+          <a class="dropdown-item" href="#">Separated link</a>
+          </div>
+          </div>
+      </li>
+
+      {{-- <li class="nav-item ml-3">
+        <div class="btn-group">
+          <a href="{{route('admin.order.create')}}" class="btn btn-primary">Арендовать</a>  
+      </li>
+
+      <li class="nav-item ml-3">
+        <div class="btn-group">
+          <a href="{{route('admin.order.create')}}" class="btn bg-indigo color-palette">Купить пентхаус</a>  
+      </li> --}}
+      
     </ul>
 
     <!-- Right navbar links -->
@@ -161,7 +212,7 @@
   <!-- /.navbar -->
 
   <!-- Main Sidebar Container -->
-  <aside class="main-sidebar sidebar-dark-primary elevation-4">
+  <aside id="main-sidebar" class="main-sidebar sidebar-dark-primary elevation-4">
     <!-- Brand Logo -->
     <a href="{{route('admin.index')}}" class="brand-link">
       <img src="/adminlte/dist/img/AdminLTELogo.png" alt="AdminLTE Logo" class="brand-image img-circle elevation-3" style="opacity: .8"/>
@@ -189,46 +240,64 @@
 
       <nav class="mt-2">
         <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
-         <li class="nav-item">
-          <a href="#" class="nav-link active">
-            <i class="nav-icon fas fa-shopping-bag"></i>
-            <p>Заказы<i class="right fas fa-angle-left"></i></p>
-          </a>
-          <ul class="nav nav-treeview">
-            <li class="nav-item">
-              <a href="" class="nav-link">
-              <i class="far fa-circle nav-icon"></i>
-              <p>Продажа</p>
-            </a>
-            </li>
-          <li class="nav-item">
-            <a href="./index2.html" class="nav-link">
-              <i class="far fa-circle nav-icon"></i>
-              <p>Аренда</p>
-            </a>
-          </li>
-          <li class="nav-item">
-            <a href="./index3.html" class="nav-link active">
-              <i class="far fa-circle nav-icon"></i>
-              <p>Новые</p>
-            </a>
-          </li>
-          <li class="nav-item">
-            <a href="./index3.html" class="nav-link active">
-              <i class="far fa-circle nav-icon"></i>
-              <p>Завершённые</p>
-            </a>
-          </li>
-          </ul>
-        </li>
+
 
           <li class="nav-item">
-            {{-- РОУТ --}}
-            <a href="{{route('admin.products.index')}}" class="nav-link"> 
-              <i class="nav-icon fas fa-camera"></i>
-              <p>Продукты</p>
+            <a href="#" class="nav-link active">
+              <i class="nav-icon fas fa-concierge-bell"></i>
+              <p>Отель<i class="right fas fa-angle-left"></i></p>
             </a>
+            <ul class="nav nav-treeview">
+              <li class="nav-item">
+                <a href="{{route('admin.penthouse.index')}}" class="nav-link">
+                <i class="far fa-circle nav-icon"></i>
+                <p>Пентхаусы</p>
+              </a>
+              </li>
+            <li class="nav-item">
+              <a href="{{route('admin.room.index')}}" class="nav-link">
+                <i class="far fa-circle nav-icon"></i>
+                <p>Номера</p>
+              </a>
+            </li>
+            </ul>
           </li>
+
+
+          <li class="nav-item">
+            <a href="#" class="nav-link active">
+              <i class="ion ion-stats-bars nav-icon"></i>
+              <p>Заказы<i class="right fas fa-angle-left"></i></p>
+            </a>
+            <ul class="nav nav-treeview">
+              <li class="nav-item">
+                <a href="" class="nav-link">
+                <i class="fa fa-key nav-icon"></i>
+                <p>Заселённые</p>
+              </a>
+              </li>
+            <li class="nav-item">
+              <a href="{{route('admin.order.new')}}" class="nav-link active">
+                <i class="fa fa-plus nav-icon"></i>
+                <p>Новые</p>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a href="{{route('admin.order.completed')}}" class="nav-link active">
+                <i class="fa fa-check nav-icon"></i>
+                <p>Завершённые</p>
+              </a>
+            </li>
+            </ul>
+          </li>
+
+
+          {{-- <li class="nav-item">
+            <a href="{{route('admin.ticket.index')}}" class="nav-link"> 
+              <i class="nav-icon fas fa-ticket-alt"></i>
+              <p>Билеты</p>
+            </a>
+          </li> --}}
 
           <li class="nav-item">
             <a href="{{route('admin.category.index')}}" class="nav-link">
@@ -238,11 +307,28 @@
           </li>
 
           <li class="nav-item">
+            <a href="{{route('admin.amenity.index')}}" class="nav-link"> 
+              <i class="nav-icon fas fa-wifi"></i>
+              <p>Удобства номеров</p>
+            </a>
+          </li>
+
+          <li class="nav-item">
+            {{-- РОУТ --}}
+            <a href="{{route('admin.service.index')}}" class="nav-link"> 
+              <i class="nav-icon fas fa-spa"></i>
+              <p>Услуги \ Сервисы</p>
+            </a>
+          </li>
+
+         
+
+          {{-- <li class="nav-item">
             <a href="{{route('admin.type.index')}}" class="nav-link">
               <i class="nav-icon fas fa-tags"></i>
               <p>Типы товаров</p>
             </a>
-          </li>
+          </li> --}}
 
           <li class="nav-item">
             <a href="{{route('admin.user.index')}}" class="nav-link">
@@ -251,14 +337,14 @@
             </a>
           </li> 
           
-          @can('AdminView', auth()->user())
+          {{-- @can('AdminView', auth()->user()) --}}
           <li class="nav-item">
             <a href="{{route('admin.role.index')}}" class="nav-link">
-              <i class="nav-icon fas fa-user-tag"></i>
+              <i class="nav-icon fas fa-tools"></i>
               <p>Роли доступа</p>
             </a>
           </li>
-          @endcan
+          {{-- @endcan --}}
       </nav>
       <!-- /.sidebar-menu -->
     </div>
@@ -269,6 +355,7 @@
   <div class="content-wrapper">
     @yield('content')
   </div>
+  <div class="clearfix"></div>
   <!-- /.content-wrapper -->
   <footer class="main-footer">
     <strong>Copyright &copy; 2014-{{now()->year}} <a href="{{route('admin.index')}}">Sorcerer's Serenity Oasis </a>.</strong>
@@ -276,22 +363,23 @@
     
   </footer>
 
-  <!-- Control Sidebar -->
-  <aside class="control-sidebar control-sidebar-dark">
-    <!-- Control sidebar content goes here -->
-  </aside>
-  <!-- /.control-sidebar -->
+ 
 </div>
 <!-- ./wrapper -->
 
 <!-- jQuery -->
 <script src="{{asset('adminlte/plugins/jquery/jquery.min.js')}}"></script>
+{{-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script> --}}
+
 <!-- jQuery UI 1.11.4 -->
-<script src="{{asset('adminlte/plugins/jquery-ui/jquery-ui.min.js')}}"></script>
+{{-- <script src="{{asset('adminlte/plugins/jquery-ui/jquery-ui.min.js')}}"></script> --}}
+
+
+
 <!-- Resolve conflict in jQuery UI tooltip with Bootstrap tooltip -->
 <!-- Select2 -->
 <script>
-  $.widget.bridge('uibutton', $.ui.button)
+  // $.widget.bridge('uibutton', $.ui.button)
 </script>
 <!-- Bootstrap 4 -->
 <script src="{{asset('adminlte/plugins/bootstrap/js/bootstrap.bundle.min.js')}}"></script>
@@ -311,7 +399,6 @@
 <script src="{{asset('adminlte/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js')}}"></script>
 
 <script src="{{asset('adminlte/plugins/datatables-searchpanes/js/searchPanes.bootstrap4.min.js')}}"></script>
-<script src="{{asset('adminlte/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js')}}"></script>
 
 {{-- Charts --}}
 <script src="{{asset('adminlte/plugins/chart.js/Chart.bundle.min.js')}}"></script>
@@ -332,20 +419,42 @@
  <script src="{{asset('adminlte/plugins/raphael/raphael.min.js')}}"></script>
  <script src="{{asset('adminlte/plugins/jquery-mapael/jquery.mapael.min.js')}}"></script>
 
+ {{-- Выбор Дат --}}
+ <script src="{{asset('adminlte/plugins/moment/moment.min.js')}}"></script>
+ <script src="{{asset('adminlte/plugins/daterangepicker/daterangepicker.js')}}"></script>
+
+ <!-- Маски ввода -->
+<script src="{{asset('adminlte/plugins/inputmask/jquery.inputmask.js')}}"></script>
+
 
 <!-- AdminLTE App -->
 <script src="{{asset('adminlte/dist/js/adminlte.js')}}"></script>
 <!-- Select2 -->
 <script src="{{asset('adminlte/plugins/select2/js/select2.full.min.js')}}"></script>
+
+{{-- Full Calendar  --}}
+<script src='http://fullcalendar.io/js/fullcalendar-2.1.1/fullcalendar.min.js'></script>
+
+
+
+{{-- <script src="{{asset('adminlte/plugins/fullcalendar/main.min.js')}}"></script> --}}
+
 <script>
   $('.tags').select2()
   $('.category').select2()
   $('.type').select2()
 
+
   $('.dropdown-toggle').dropdown();
+
+  $('.phone').inputmask("+7 (999) 999-99-99");
 
 
   // $('#cp-component').colorpicker()
+ 
+
+
+
   $("#is_published").bootstrapSwitch();
   autosize($('textarea.autosize'));
 
@@ -397,6 +506,26 @@
 
             // Сохраняем выбранную тему в localStorage
             localStorage.setItem('theme', body.classList.contains('dark-mode') ? 'dark-mode' : 'light-mode');
+        });
+
+       
+  
+
+
+
+        // Проверяем, есть ли сохраненное значение состояния меню в localStorage
+        const menuState = localStorage.getItem('menuState');
+        if (menuState === 'collapsed') {
+          document.body.classList.add('sidebar-collapse');
+        }
+
+        document.querySelector('[data-widget="pushmenu"]').addEventListener('click', function() {
+          const menuCollapsed = document.body.classList.contains('sidebar-collapse');
+          if (menuCollapsed) {
+            localStorage.setItem('menuState', 'expanded');
+          } else {
+            localStorage.setItem('menuState', 'collapsed');
+          }
         });
 
 </script>

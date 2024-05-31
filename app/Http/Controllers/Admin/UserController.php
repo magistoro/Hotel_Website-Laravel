@@ -15,9 +15,7 @@ use Illuminate\Support\Facades\DB;
 
 class UserController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+
     public function index()
     {
         $users = User::all();
@@ -25,9 +23,7 @@ class UserController extends Controller
         return view('admin.user.index', compact('users', 'roles'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
+
     public function create()
     {
         $users = User::all();
@@ -36,42 +32,48 @@ class UserController extends Controller
         return view('admin.user.create', ['users' => $users, 'roles' => $roles]);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
+
     public function store(StoreRequest $request)
     {
-        //
+        $data = $request->validated();
+
+        $data['birth_date'] = \Carbon\Carbon::createFromFormat('d.m.Y', $data['birth_date'])->format('Y-m-d');
+
+        $user = new User($data);
+        $user->save();
+
+        return redirect()->route('admin.user.index')->with('success', 'Пользователь '.$user['name'].' успешно добавлен!');
     }
 
-    /**
-     * Display the specified resource.
-     */
+
     public function show(User $user)
     {
         return view('admin.user.show', compact('user'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Product $product)
+
+    public function edit(User $user)
     {
-        //
+        $roles = Role::all();
+
+        return view('admin.user.edit', compact('user', 'roles'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(UpdateRequest $request, Product $product)
+
+    public function update(UpdateRequest $request, User $user)
     {
-        //
+        // Получаем валидированные данные из формы
+        $data = $request->validated(); 
+        // Преобразуем дату в формат базы данных
+        $data['birth_date'] = \Carbon\Carbon::createFromFormat('d.m.Y', $data['birth_date'])->format('Y-m-d');
+ 
+        $user->update($data);
+ 
+        return redirect()->route('admin.user.show', $user->id)->with('success', 'Пользователь '.$user['name'].' успешно обновлён!');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Product $product)
+
+    public function destroy(User $user)
     {
         //
     }

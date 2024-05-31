@@ -13,7 +13,7 @@ if (successMessage) {
     Swal.fire({
       title: successMessage,
       icon: 'success',
-      timer: 3000,
+      timer: 4000,
       position: 'top-end',
       toast: true,
       showConfirmButton: false,
@@ -23,7 +23,7 @@ if (successMessage) {
     Swal.fire({
       title: successMessage,
       icon: 'success',
-      timer: 3000,
+      timer: 4000,
       position: 'top-end',
       toast: true,
       showConfirmButton: false
@@ -36,7 +36,7 @@ if (infoMessage) {
     Swal.fire({
       title: infoMessage,
       icon: 'info',
-      timer: 3000,
+      timer: 4000,
       position: 'top-end',
       toast: true,
       showConfirmButton: false,
@@ -46,7 +46,7 @@ if (infoMessage) {
     Swal.fire({
       title: infoMessage,
       icon: 'info',
-      timer: 3000,
+      timer: 4000,
       position: 'top-end',
       toast: true,
       showConfirmButton: false
@@ -59,7 +59,7 @@ if (dangerMessage) {
     Swal.fire({
       title: dangerMessage,
       icon: 'error',
-      timer: 3000,
+      timer: 4000,
       position: 'top-end',
       toast: true,
       showConfirmButton: false,
@@ -69,7 +69,7 @@ if (dangerMessage) {
     Swal.fire({
       title: dangerMessage,
       icon: 'error',
-      timer: 3000,
+      timer: 4000,
       position: 'top-end',
       toast: true,
       showConfirmButton: false

@@ -47,36 +47,9 @@
             </tr>
             <tr>
               <td>Наименование</td>
-              <td>{{$category->name}}</td>
+              <td>{{$category->title}}</td>
             </tr>
 
-            <tr>
-              <td>Транскрипция</td>
-              <td>{{$category->slug}}</td>
-            </tr>
-
-            <tr>
-              <td>Фото</td>
-              <td>
-                {{-- <img src="/Content/Category/thumbnails/{{$category->thumbnail}}" alt="{{$category->thumbnail}}" style="max-width: 30%"> --}}
-                <img src="/Content/Category/thumbnails/{{$category->thumbnail}}" alt="{{$category->thumbnail}}" style="max-width: 30%">
-              </td>
-            </tr>
-
-            <tr>
-              <td>Дочерние категории</td>
-            <td>
-                @if ($category->children->count() > 0)
-                    <ul>
-                        @foreach ($category->children as $child)
-                            <li><a href="{{ route('admin.category.show', $child->id) }}" style="color:black">{{$child->name}}</a></li>
-                        @endforeach
-                    </ul>
-                @else
-                    Нет дочерних категорий
-                @endif
-            </td>
-          </tr>
             </tbody>
             </table>
             </div>

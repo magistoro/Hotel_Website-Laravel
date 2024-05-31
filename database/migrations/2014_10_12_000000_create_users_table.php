@@ -24,6 +24,7 @@ return new class extends Migration
             $table->string('email')->unique();
 
             $table->foreignId('role_id')
+            ->default(1)
             ->constrained('roles')
             ->cascadeOnDelete()
             ->restrictOnUpdate();

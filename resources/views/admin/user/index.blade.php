@@ -59,5 +59,6 @@
     </tfoot>
     </table></div></div></div></div></div></div></div></div>
     </section>
-  <!-- /.content -->
+  <!-- /.content --> 
+  @extends('layouts.statusPopUp')
 @endsection

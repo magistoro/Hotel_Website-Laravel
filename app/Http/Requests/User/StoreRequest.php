@@ -23,8 +23,14 @@ class StoreRequest extends FormRequest
     {
         return [
             'name'  => 'required|string',
-            'thumbnail' => 'required|nullable',
-            'parent_id' => 'required|int',
+            'surname'  => 'nullable|string',
+            'patronymic'  => 'nullable|string',
+            'phone'  => 'nullable|string',
+            'birth_date'  => 'nullable|string',
+            'comment'  => 'nullable|string',
+            'email' => 'required|string',
+            'password' => 'required|string',
+            'role_id' => 'required|string',
         ];
     }
 }

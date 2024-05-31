@@ -35,6 +35,7 @@
                   @method('delete')
                   <input type="submit" class="btn btn-danger" value="Удалить">
                 </form>
+                <a href="{{route('admin.user.edit', $user->id)}}" class="btn btn-success ml-3">Запросить смену пароля</a>
             </div>
             
             <div class="card-body table-responsive p-0">
@@ -43,17 +44,7 @@
             <tbody>
             <tr>
                 <td>ID</td>
-                <td>{{$user->id}}</td>
-            </tr>
-
-            <tr>
-              <td>Имя</td>
-              <td>{{$user->name}}</td>
-            </tr>
-
-            {{-- <tr>
-              <td>Имя</td>
-              <td>{{$user->name}}</td>
+                <td>{{ substr($user->id, 0, 9) . str_repeat('*', strlen($user->id) - 17) . substr($user->id, -8) }}</td>
             </tr>
 
             <tr>
@@ -62,9 +53,34 @@
             </tr>
 
             <tr>
-              <td>Имя</td>
-              <td>{{$user->name}}</td>
-            </tr> --}}
+              <td>Фамилия</td>
+              <td>{{$user->surname}}</td>
+            </tr>
+
+            <tr>
+              <td>Отчество</td>
+              <td>{{$user->patronymic}}</td>
+            </tr>
+
+            <tr>
+              <td>Email</td>
+              <td>{{$user->email}}</td>
+            </tr>
+
+            <tr>
+              <td>Телефон</td>
+              <td>{{$user->phone}}</td>
+            </tr>
+
+            <tr>
+              <td>Дата рождения</td>
+              <td>{{$user->birth_date}}</td>
+            </tr>
+
+            <tr>
+              <td>Комментарий</td>
+              <td>{{$user->comment}}</td>
+            </tr>
 
             <tr>
               <td>Уровень допуска</td>

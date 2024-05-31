@@ -23,8 +23,14 @@ class UpdateRequest extends FormRequest
     {
         return [
             'name'  => 'required|string',
-            'thumbnail' => 'image|nullable',
-            'parent_id' => 'required|int',
+            'surname'  => 'nullable|string',
+            'patronymic'  => 'nullable|string',
+            'phone'  => 'nullable|string',
+            'birth_date'  => 'nullable|string',
+            'comment'  => 'nullable|string',
+            'email' => 'nullable|string',
+            'password',
+            'role_id' => 'required|string',
         ];
     }
 }

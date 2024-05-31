@@ -3,14 +3,14 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Product\StoreRequest;
-use App\Http\Requests\Product\UpdateRequest;
-use App\Models\Product;
-
-
+use App\Http\Requests\Penthouse\StoreRequest;
+use App\Http\Requests\Penthouse\UpdateRequest;
+use App\Models\Amenity;
 use App\Models\Category;
 use App\Models\Penthouse;
+use App\Models\PenthouseAmenity;
 use App\Models\Type;
+use App\Models\User;
 use Illuminate\Support\Facades\DB;
 
 class PenthouseController extends Controller
@@ -20,9 +20,9 @@ class PenthouseController extends Controller
      */
     public function index()
     {
-        $products = Penthouse::all();
+        $penthouses = Penthouse::all();
         $categories = Category::all();
-        return view('admin.product.index', compact('products', 'categories'));
+        return view('admin.penthouse.index', compact('penthouses', 'categories'));
     }
 
     /**
@@ -30,18 +30,16 @@ class PenthouseController extends Controller
      */
     public function create()
     {
-        $categories = collect();         
+        $amenities = Amenity::all();
+        $categories = Category::all();
 
-        Category::chunk(200, function ($records) use (&$categories) {
-            $categories = $categories->concat($records);
-        });
+        $users = User::all();
 
-        $categories = Category::whereIsLeaf()->get();
-
-     //   $types = Type::all();
-        // dd($categories);
-
-        return view('admin.product.create', ['categories' => $categories]);
+        return view('admin.penthouse.create', [
+            'amenities' => $amenities,
+            'users' => $users,
+            'categories' => $categories,
+        ]);
     }
 
     /**
@@ -51,84 +49,65 @@ class PenthouseController extends Controller
     {
         $data = $request->validated();
 
-        // // Generating a new file name as file extension concatenated to current time (for uniqueness) 
-        $fileName = time() . '.' . $data['thumbnail']->getClientOriginalExtension();
-        // // moving file to public/images directory with new name
-        $data['thumbnail']->move(public_path('Content/Product/thumbnails'), $fileName);
+        // $penthouse = new Penthouse($data);
+
+        $penthouse = Penthouse::firstOrCreate([
+            'title' => $data['title']
+        ], $data);
 
 
+        if (isset($data['amenities'])) $amenitiesIds = $data['amenities'];
 
-        $product = new Penthouse($data);
-        $product->save();
-        $product -> thumbnail = $fileName;
-        $product -> update();
+        unset($data['amenities']);
+
+        if (isset($amenitiesIds)) foreach ($amenitiesIds as $amenityId) {
+            PenthouseAmenity::firstOrCreate([
+                'penthouse_id' => $penthouse->id,
+                'amenity_id' => $amenityId,
+            ]);
+        }
+
+               
+        $penthouse->save();
      
-        // Product::firstOrCreate([
-        //     'name' => $data['name'],
-            
-        // ], $data); 
-       
-        return redirect()->route('admin.products.index');
+        return redirect()->route('admin.penthouse.index')->with('success', 'Пентхаус '.$penthouse['title'].' успешно создан!');
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(Category $category, Penthouse $product)
+    public function show(Category $category, Penthouse $penthouse)
     {
-        // $breadcrumbs = Category::ancestorsAndSelf($category->id)->toArray();
-        // return view('product.show', ['category' => $category, 'product' => $product, 'breadcrumbs' => $breadcrumbs]);
+        $penthouseAmenities = $penthouse->amenities;
 
-        return view('admin.product.show', compact('product'));
+        return view('admin.penthouse.show', compact('penthouse', 'penthouseAmenities'));
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Penthouse $product)
+    public function edit(Penthouse $penthouse)
     {
-        $categories = collect();         
+        $penthouseAmenities = $penthouse->amenities;
 
-        Category::chunk(200, function ($records) use (&$categories) {
-            $categories = $categories->concat($records);
-        });
+        $amenities = Amenity::all();
+        $categories = Category::all();
+        $users = User::all();
 
-        $categories = Category::whereIsLeaf()->get();
+        // dd($amenities,$categories,$users, $penthouseAmenities);
 
-      //  $types = Type::all();
-
-        return view('admin.product.edit', compact('product', 'categories', 'types'));
+        return view('admin.penthouse.edit', compact('penthouse', 'amenities', 'categories', 'users', 'penthouseAmenities'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateRequest $request, Penthouse $product)
+    public function update(UpdateRequest $request, Penthouse $penthouse)
     {
           // Получаем валидированные данные из формы
           $data = $request->validated(); 
- 
-          // Удаление прошлой картинки и добавление новой
-         //  if ($data['preview_image'] ?? null) {
-         //      Storage::disk('public')->delete('/images/'.$product->preview_image); // удаление
-              
-         //      $data['preview_image'] = Storage::disk('public')->put('/images', $data['preview_image']); // добавление
-         //  }
-         //  else{
-         //      $data['preview_image'] = $product->preview_image; // оставляем существующую картинку
-         //  }
-  
-  
-         // Проверяем, есть ли новое значение parent_id в входных данных
-        //   if (isset($data['parent_id'])) {
-        //      // Если есть, найдем родительскую категорию
-        //      $parent = Category::find($data['parent_id']);
-        //      // Обновим родительскую связь
-        //      $category->parent()->associate($parent);
-        //  }
-        //  // dd($data);
-        //   // Обновление данных продукта
-        //   $category->update($data);
+
+
   
         //   return redirect()->route('admin.category.show', $category->id);
     }
@@ -136,9 +115,9 @@ class PenthouseController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Penthouse $product)
+    public function destroy(Penthouse $penthouse)
     {
-        $product->delete();
-        return redirect()->route('admin.products.index');
+        $penthouse->delete();
+        return redirect()->route('admin.penthouses.index');
     }
 }

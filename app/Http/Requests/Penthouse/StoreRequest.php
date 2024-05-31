@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Requests\Product;
+namespace App\Http\Requests\Penthouse;
 
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -22,14 +22,16 @@ class StoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name'  => 'required|string',
+            'title'  => 'required|string',
             'description'  => 'nullable|string',
-            'price'  => 'required|int',
+            'price'  => 'required|numeric',
             
-            
+            'image' => 'nullable|image',
 
-            'category_id' => 'required|int',
-            'type_id' => 'required|int',
+            'category_id' => 'nullable|int',
+            'user_id' => 'nullable|string',
+
+            'amenities' => 'nullable|array',
         ];
     }
 }

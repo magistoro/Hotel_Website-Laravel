@@ -38,60 +38,31 @@ class CategoryController extends Controller
     {
         $data = $request->validated();
 
-       
-
         $category = new Category($data);
+        $category->save();
 
-
-       
-        return redirect()->route('admin.category.index')->with('success', 'Категория '.$category['name'].' успешно добавлена!');
+        return redirect()->route('admin.category.index')->with('success', 'Категория '.$category['title'].' успешно добавлена!');
     }
 
-    /**
-     * Display the specified resource.
-     */
+
     public function show(Category $category)
     {
         return view('admin.category.show', compact('category'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
+
     public function edit(Category $category)
     {
         $categories = Category::all();
         return view('admin.category.edit', compact('category', 'categories'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
+
     public function update(UpdateRequest $request, Category $category)
     {
          // Получаем валидированные данные из формы
          $data = $request->validated(); 
  
-         // Удаление прошлой картинки и добавление новой
-        //  if ($data['preview_image'] ?? null) {
-        //      Storage::disk('public')->delete('/images/'.$product->preview_image); // удаление
-             
-        //      $data['preview_image'] = Storage::disk('public')->put('/images', $data['preview_image']); // добавление
-        //  }
-        //  else{
-        //      $data['preview_image'] = $product->preview_image; // оставляем существующую картинку
-        //  }
- 
- 
-        // Проверяем, есть ли новое значение parent_id в входных данных
-         if (isset($data['parent_id'])) {
-            // Если есть, найдем родительскую категорию
-            $parent = Category::find($data['parent_id']);
-            // Обновим родительскую связь
-            $category->parent()->associate($parent);
-        }
-        // dd($data);
-         // Обновление данных продукта
          $category->update($data);
  
          return redirect()->route('admin.category.show', $category->id)->with('success', 'Категория '.$category['name'].' успешно обновлена!');
